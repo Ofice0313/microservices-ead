@@ -1,12 +1,16 @@
 package com.devcaleb.ead.authUser.controllers;
 
+import com.devcaleb.ead.authUser.dto.UserDTO;
 import com.devcaleb.ead.authUser.entities.User;
 import com.devcaleb.ead.authUser.services.UserService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +46,58 @@ public class UserController {
         } else {
             service.delete(userOptional.get());
             return ResponseEntity.status(HttpStatus.OK).body("User deleted success!");
+        }
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Object> updateUser(
+            @PathVariable(value = "userId") UUID userId,
+            @RequestBody @JsonView(UserDTO.UserView.UserPut.class) UserDTO userDTO) {
+        Optional<User> userOptional = service.findById(userId);
+        if(!userOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        } else {
+            var user = userOptional.get();
+            user.setFullName(userDTO.getFullName());
+            user.setPhoneNumber(userDTO.getPhoneNumber());
+            user.setCpf(userDTO.getCpf());
+            user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            service.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        }
+    }
+
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<Object> updatePassword(
+            @PathVariable(value = "userId") UUID userId,
+            @RequestBody @JsonView(UserDTO.UserView.PasswordPut.class) UserDTO userDTO) {
+        Optional<User> userOptional = service.findById(userId);
+        if(!userOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        } if(!userOptional.get().getPassword().equals(userDTO.getOldPassword())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
+        } else {
+            var user = userOptional.get();
+            user.setPassword(userDTO.getPassword());
+            user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            service.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully.");
+        }
+    }
+
+    @PutMapping("/{userId}/image")
+    public ResponseEntity<Object> updateImage(
+            @PathVariable(value = "userId") UUID userId,
+            @RequestBody @JsonView(UserDTO.UserView.ImagePut.class) UserDTO userDTO) {
+        Optional<User> userOptional = service.findById(userId);
+        if(!userOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+        } else {
+            var user = userOptional.get();
+            user.setImageUrl(userDTO.getImageUrl());
+            user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            service.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         }
     }
 }
