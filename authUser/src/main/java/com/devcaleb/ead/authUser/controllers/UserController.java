@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getOneUser(@PathVariable(value = "userId")UUID userId) {
+    public ResponseEntity<Object> getOneUser(@PathVariable(value = "userId") UUID userId) {
         Optional<User> userOptional = service.findById(userId);
         if(!userOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
@@ -34,8 +34,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId")UUID userId) {
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId) {
         Optional<User> userOptional = service.findById(userId);
         if(!userOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");

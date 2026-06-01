@@ -13,4 +13,11 @@ public interface UserService {
     Optional<User> findById(UUID userId);
 
     void delete(User user);
+
+    void save(User user);
+
+    boolean existsByUsername(String username);
+
+
+    boolean existsByEmail(String email);
 }
