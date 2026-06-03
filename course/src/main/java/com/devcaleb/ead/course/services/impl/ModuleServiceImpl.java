@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ModuleServiceImpl implements ModuleService {
@@ -28,5 +30,25 @@ public class ModuleServiceImpl implements ModuleService {
             lessonRepository.deleteAll(lessons);
         }
         moduleRepository.delete(module);
+    }
+
+    @Override
+    public Object save(Module module) {
+        return moduleRepository.save(module);
+    }
+
+    @Override
+    public Optional<Module> findModuleIntoCourse(UUID courseId, UUID moduleId) {
+        return moduleRepository.findModuleIntoCourse(courseId, moduleId);
+    }
+
+    @Override
+    public List<Module> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public List<Module> findAllByCourse(UUID courseId) {
+        return moduleRepository.findAllModulesIntoCourse(courseId);
     }
 }
