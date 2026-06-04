@@ -51,5 +51,4 @@ public class User extends RepresentationModel<User> implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy'T'HH:mm:ss'Z'")
     private LocalDateTime lastUpdateDate;
 
-
 }

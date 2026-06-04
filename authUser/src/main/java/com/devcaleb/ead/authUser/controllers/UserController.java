@@ -5,6 +5,7 @@ import com.devcaleb.ead.authUser.entities.User;
 import com.devcaleb.ead.authUser.services.UserService;
 import com.devcaleb.ead.authUser.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import java.util.UUID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Log4j2
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value = "/api/users")
@@ -59,11 +61,14 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId) {
+        log.debug("DELETE deleteUser userId received {} ", userId);
         Optional<User> userOptional = service.findById(userId);
         if(!userOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
         } else {
             service.delete(userOptional.get());
+            log.debug("DELETE deleteUser userId saved {} ", userId);
+            log.info("User deleted successfully userId {} ", userId);
             return ResponseEntity.status(HttpStatus.OK).body("User deleted success!");
         }
     }
@@ -73,6 +78,7 @@ public class UserController {
             @PathVariable(value = "userId") UUID userId,
             @RequestBody @Validated(UserDTO.UserView.UserPut.class)
             @JsonView(UserDTO.UserView.UserPut.class) UserDTO userDTO) {
+        log.debug("PUT updateUser userDto received {} ", userDTO.toString());
         Optional<User> userOptional = service.findById(userId);
         if(!userOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
@@ -83,6 +89,8 @@ public class UserController {
             user.setCpf(userDTO.getCpf());
             user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
             service.save(user);
+            log.debug("PUT updateUser user saved {} ", user.toString());
+            log.info("User updated successfully userId {} ", user.getId());
             return ResponseEntity.status(HttpStatus.OK).body(user);
         }
     }
@@ -96,6 +104,7 @@ public class UserController {
         if(!userOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
         } if(!userOptional.get().getPassword().equals(userDTO.getOldPassword())) {
+            log.warn("Mismatched old password userId {} ", userDTO.getId());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
         } else {
             var user = userOptional.get();
