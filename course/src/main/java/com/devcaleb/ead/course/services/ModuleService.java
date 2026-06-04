@@ -2,6 +2,9 @@ package com.devcaleb.ead.course.services;
 
 import com.devcaleb.ead.course.entities.Lesson;
 import com.devcaleb.ead.course.entities.Module;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,4 +23,6 @@ public interface ModuleService {
     List<Module> findAllByCourse(UUID courseId);
 
     Optional<Module> findById(UUID moduleId);
+
+   Page<Module> findAllByCourse(Specification<Module> spec, Pageable pageable);
 }
