@@ -20,7 +20,7 @@ public class Lesson implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private UUID lessonId;
     @Column(nullable = false, length = 150)
     private String title;
     @Column(nullable = false, length = 250)
@@ -33,5 +33,6 @@ public class Lesson implements Serializable {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "module_id")
     private Module module;
 }

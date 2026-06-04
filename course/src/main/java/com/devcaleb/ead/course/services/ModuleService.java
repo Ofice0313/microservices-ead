@@ -1,5 +1,6 @@
 package com.devcaleb.ead.course.services;
 
+import com.devcaleb.ead.course.entities.Lesson;
 import com.devcaleb.ead.course.entities.Module;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface ModuleService {
     List<Module> findAll();
 
     List<Module> findAllByCourse(UUID courseId);
+
+    Optional<Module> findById(UUID moduleId);
 }

@@ -25,10 +25,10 @@ public class Course implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private UUID courseId;
     @Column(nullable = false, length = 150)
     private String name;
-    @Column(nullable = false, length = 250)
+    @Column(nullable = false, length = 500)
     private String description;
     @Column
     private String imageUrl;
