@@ -38,9 +38,14 @@ public class UserController {
     public ResponseEntity<Page<User>> getAllUsers(
             SpecificationTemplate.UserSpec spec,
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC)
-            Pageable pageable
+            Pageable pageable, @RequestParam(required = false) UUID courseId
             ) {
-        Page<User> userPage = service.findAll(spec, pageable);
+        Page<User> userPage = null;
+        if(courseId != null) {
+            userPage = service.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
+        } else {
+            userPage = service.findAll(spec, pageable);
+        }
         if(!userPage.isEmpty()) {
             for (User user: userPage.toList()) {
                 user.add(linkTo(methodOn(UserController.class).getOneUser(user.getId())).withSelfRel());
@@ -111,6 +116,8 @@ public class UserController {
             user.setPassword(userDTO.getPassword());
             user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
             service.save(user);
+            log.debug("PUT updatePassword user userId saved {} ", user.getId());
+            log.info("Password updated successfully userId {} ", user.getId());
             return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully.");
         }
     }
@@ -128,6 +135,8 @@ public class UserController {
             user.setImageUrl(userDTO.getImageUrl());
             user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
             service.save(user);
+            log.debug("PUT updateImage userId saved {} ", user.getId());
+            log.info("Image updated successfully userId {} ", user.getId());
             return ResponseEntity.status(HttpStatus.OK).body(user);
         }
     }

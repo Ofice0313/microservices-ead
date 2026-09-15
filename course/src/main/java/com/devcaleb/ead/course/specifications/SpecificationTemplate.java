@@ -1,9 +1,11 @@
 package com.devcaleb.ead.course.specifications;
 
 import com.devcaleb.ead.course.entities.Course;
+import com.devcaleb.ead.course.entities.CourseUser;
 import com.devcaleb.ead.course.entities.Lesson;
 import com.devcaleb.ead.course.entities.Module;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
@@ -46,6 +48,14 @@ public class SpecificationTemplate {
             Root<Module> module = query.from(Module.class);
             Expression<Collection<Lesson>> moduleLessons = module.get("lessons");
             return criteriaBuilder.and(criteriaBuilder.equal(module.get("moduleId"), moduleId), criteriaBuilder.isMember(lesson, moduleLessons));
+        };
+    }
+
+    public static Specification<Course> courseUserId(final UUID userId) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            Join<Course, CourseUser> courseUser = root.join("courseUsers");
+            return criteriaBuilder.equal(courseUser.get("userId"), userId);
         };
     }
 }
