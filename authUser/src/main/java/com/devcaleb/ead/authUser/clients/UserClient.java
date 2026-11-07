@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ public class UserClient {
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
     UtilsService utilsService;
 
     public Page<CourseDTO> getAllCoursesByUser(UUID userId, Pageable pageable) {
@@ -36,12 +38,17 @@ public class UserClient {
         try {
             ParameterizedTypeReference<ResponsePageDTO<CourseDTO>> responseType = new ParameterizedTypeReference<ResponsePageDTO<CourseDTO>>() {};
             result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
-            searchResult = result.getBody().getContent();
-            log.debug("Response Number of elements: {} ", searchResult.size());
-        }catch (HttpStatusCodeException e) {
-            log.error("Errpr request /course {} ", e);
+            if (result.getBody() != null) {
+                searchResult = result.getBody().getContent();
+                log.debug("Response Number of elements: {} ", searchResult.size());
+            }
+        } catch (HttpStatusCodeException e) {
+            log.error("Error request /courses userId {} ", userId, e);
         }
         log.info("Ending request /courses userId {} ", userId);
+        if (result == null || result.getBody() == null) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
         return result.getBody();
     }
 }
