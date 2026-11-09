@@ -21,4 +21,8 @@ logging:
     com.devcaleb.ead: TRACE
     root: INFO
 
+ead:
+  api:
+    url:
+      course: 'http://localhost:8082'
 
