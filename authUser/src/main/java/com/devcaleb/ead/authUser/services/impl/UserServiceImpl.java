@@ -1,6 +1,8 @@
 package com.devcaleb.ead.authUser.services.impl;
 
 import com.devcaleb.ead.authUser.entities.User;
+import com.devcaleb.ead.authUser.entities.UserCourse;
+import com.devcaleb.ead.authUser.repositories.UserCourseRepository;
 import com.devcaleb.ead.authUser.repositories.UserRepository;
 import com.devcaleb.ead.authUser.services.UserService;
 import com.devcaleb.ead.authUser.specifications.SpecificationTemplate;
@@ -20,6 +22,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private UserCourseRepository userCourseRepository;
+
     @Override
     public List<User> findAll(Pageable pageable) {
         return repository.findAll();
@@ -32,6 +37,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(User user) {
+        List<UserCourse> userCourseList = userCourseRepository.findAllUserCourseIntoUser(user.getId());
+        if(!userCourseList.isEmpty()) {
+            userCourseRepository.deleteAll(userCourseList);
+        }
         repository.delete(user);
     }
 

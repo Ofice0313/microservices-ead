@@ -1,9 +1,11 @@
 package com.devcaleb.ead.course.services.impl;
 
 import com.devcaleb.ead.course.entities.Course;
+import com.devcaleb.ead.course.entities.CourseUser;
 import com.devcaleb.ead.course.entities.Lesson;
 import com.devcaleb.ead.course.entities.Module;
 import com.devcaleb.ead.course.repositories.CourseRepository;
+import com.devcaleb.ead.course.repositories.CourseUserRepository;
 import com.devcaleb.ead.course.repositories.LessonRepository;
 import com.devcaleb.ead.course.repositories.ModuleRepository;
 import com.devcaleb.ead.course.services.CourseService;
@@ -30,6 +32,9 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     LessonRepository lessonRepository;
 
+    @Autowired
+    CourseUserRepository courseUserRepository;
+
     @Transactional
     @Override
     public void delete(Course course) {
@@ -42,6 +47,10 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
             moduleRepository.deleteAll(modules);
+        }
+        List<CourseUser> courseUserList = courseUserRepository.findAllCourseUserIntoCourse(course.getCourseId());
+        if(!courseUserList.isEmpty()) {
+            courseUserRepository.deleteAll(courseUserList);
         }
         courseRepository.delete(course);
     }
